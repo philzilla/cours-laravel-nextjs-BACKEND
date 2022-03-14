@@ -138,12 +138,58 @@ class SportController extends Controller
 
     }
 
-   
-    public function update(Request $request, Sport $sport)
+    /*************************************************************************/
+    /**** Méthode PUT - Mettre à jour une fiche sport *****/
+    /*************************************************************************/
+    /* Méthode 1   
+    public function update(SportRequest $request, Sport $sport)
     {
-        //
+      $sport->update($request->validated());
+      
+      return new SportResource($sport);
     }
+    */
+    
+    // Méthode 2 
+    /*
+    public function update(Request $request,Sport $sport)
+    {
+      $updateSport = $request->validate([ 
+        'name'=>'required', 
+      ]);
 
+      Sport::whereId($sport->id)->update($updateSport);
+      return new SportResource($sport);
+    }
+    */
+    
+
+    // Méthode 3
+    public function update(Request $request,Sport $sport)
+    {
+      $input = $request->all();
+   
+      $validator = Validator::make($input, [
+          'name' => 'required',
+      ]);
+
+      if($validator->fails()){
+          return $this->sendError('Validation Error.', $validator->errors());       
+      }
+
+      $sport->name = $input['name'];
+      $sport->save();
+
+      /* Si il y a un FK
+      $sport->name = $input['name'];
+      $sport->category_id = $input['category'];
+      $sport->save();
+      */
+
+      return response()->json([
+        'status' => 'Mise à jour avec succèss']);
+    }
+    
   
     public function destroy(Sport $sport)
     {
