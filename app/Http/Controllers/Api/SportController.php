@@ -14,9 +14,9 @@ use App\Http\Resources\SportResource;
 class SportController extends Controller
 {
     /*************************************************************************/
-    /**** Méthode GET *****/
+    /**** Méthode GET - Afficher la liste des sports *****/
     /*************************************************************************/
-    // Méthode 1 - Afficher la liste des sports
+    // Méthode 1
     /*
     public function index()
     {
@@ -25,13 +25,22 @@ class SportController extends Controller
     }
     */
 
-    // Méthode 2 - Afficher la liste des sports
+    // Méthode 2
     public function index()
     {
       $sports = DB::table('sports')
                 // ->select('sports.name', 'sports.id')
                 ->get()
                 ->toArray();
+
+      /* Si Jointure avec table catégorie
+      $sports = DB::table('sports')
+                ->join('categories', 'sports.category_id', '=', 'categories.id')
+                ->select('sports.*', 'categories.name')
+                ->get()
+                ->toArray();
+      
+      */
       
       return response()->json([
         'status' => 'Success',
@@ -98,10 +107,35 @@ class SportController extends Controller
     }
     
 
-    
+    /*************************************************************************/
+    /**** Méthode GET - Afficher la fiche d'sport*****/
+    /*************************************************************************/
+    // Méthode 1
+    /*
     public function show(Sport $sport)
     {
-        //
+      $sport = Sport::find($sport);
+
+      if(is_null($sport)) {
+        return $this->sendError("Ce sport est n'est pas disponible");
+      }
+      return new SportResource($sport);
+    }
+    */
+
+    // Méthode 2
+    public function show(Sport $sport)
+    {
+      $sport = Sport::find($sport);
+
+      if(is_null($sport)) {
+        return $this->sendError("Ce sport est n'est pas disponible");
+      }
+      return response()->json([
+        'status' => 'Success',
+        'data' => $sport,
+      ]);
+
     }
 
    
