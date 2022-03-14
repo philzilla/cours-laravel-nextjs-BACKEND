@@ -190,9 +190,15 @@ class SportController extends Controller
         'status' => 'Mise à jour avec succèss']);
     }
     
-  
+   /*************************************************************************/
+    /**** Méthode DELETE - Supprimer une fiche sport *****/
+    /*************************************************************************/
+    // Méthode 1
     public function destroy(Sport $sport)
     {
-        //
+        $sport->delete();
+        return response()->json([
+          'status' => 'Supprimer avec succès avec succèss']);
     }
+  
 }
