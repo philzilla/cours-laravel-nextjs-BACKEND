@@ -2,24 +2,48 @@
 
 namespace App\Http\Controllers\Api;
 
+use Validator;
 use App\Models\Sport;
 use Illuminate\Http\Request;
-use App\Http\Requests\SportRequest;
 
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\SportRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SportResource;
-use Validator;
 
 class SportController extends Controller
 {
-   
+    /*************************************************************************/
+    /**** Méthode GET *****/
+    /*************************************************************************/
+    // Méthode 1 - Afficher la liste des sports
+    /*
     public function index()
     {
-        //
+        $sports = Sport::all();
+        return new SportResource($sports);
+    }
+    */
+
+    // Méthode 2 - Afficher la liste des sports
+    public function index()
+    {
+      $sports = DB::table('sports')
+                // ->select('sports.name', 'sports.id')
+                ->get()
+                ->toArray();
+      
+      return response()->json([
+        'status' => 'Success',
+        'data' => $sports,
+      ]);
+
     }
 
+
+
     /*************************************************************************/
-    /**** Méthode POST*****/
+    /**** Méthode POST *****/
     /*************************************************************************/
     /*
     // Méthode 1 - POST Ajouter un sport
@@ -65,7 +89,7 @@ class SportController extends Controller
       }
 
       $sport = Sport::create($input);
-      
+
       return response()->json([
         'status' => 'Success',
         'data' => $sport,
