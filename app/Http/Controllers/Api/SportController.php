@@ -90,14 +90,38 @@ class SportController extends Controller
       $input = $request->all();
    
       $validator = Validator::make($input, [
-          'name' => 'required',
+        'name' => 'required',
+        'image' => 'required',
+        'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
       ]);
 
       if($validator->fails()){
           return $this->sendError('Validation Error.', $validator->errors());       
       }
 
-      $sport = Sport::create($input);
+      $filename="";
+      if($request->hasFile('image')){
+
+        // On récupère le nom du fichier avec son extension, résultat $filenameWithExt : "soccer.jpg"
+       $filenameWithExt = $request->file('image')->getClientOriginalName();
+           
+        //  On récupère l'extension du fichier, résultat $extension : ".jpg"
+        $extension = $request->file('image')->getClientOriginalExtension();
+     
+        // On créer un nouveau fichier avec le nom + une date + l'extension, résultat $fileNameToStore : "soccer_20220422.jpg"
+        $filename = $filenameWithExt.'_'.time().'.'.$extension;
+      
+        // On enregistre le fichier à la racine /storage/app/public/uploads, ici la méthode storeAs défini déjà le chemin /storage/app
+        $path = $request->file('image')->storeAs('public/uploads',$filename);
+
+      } else {
+          $filename=Null;
+      }
+
+      $sport = Sport::create([
+        'name' => $request->name,
+        'image' => $filename,
+      ]);
 
       return response()->json([
         'status' => 'Success',
@@ -105,7 +129,6 @@ class SportController extends Controller
       ]);
 
     }
-    
 
     /*************************************************************************/
     /**** Méthode GET - Afficher la fiche d'sport*****/
@@ -126,15 +149,32 @@ class SportController extends Controller
     // Méthode 2
     public function show(Sport $sport)
     {
+
+      try {
+        $sport =  Sport::whereId($sport->id)->firstOrFail();
+        return response(['status' => 'ok', 'data' => $sport], 200);
+    } catch (e ) {
+        return response(['status' => 'error', 'message' => 'Pas de données'], 500);
+    }
+
+      /*
       $sport = Sport::find($sport);
+      // $sport =  Sport::whereId($sport->id)->firstOrFail();
 
       if(is_null($sport)) {
-        return $this->sendError("Ce sport est n'est pas disponible");
+        return response()->json([
+          'status' => 'Error',
+          'data' => "Ce sport est n'est pas disponible",
+        ]);
+        // return $this->sendError("Ce sport est n'est pas disponible");
       }
       return response()->json([
         'status' => 'Success',
         'data' => $sport,
       ]);
+      */
+      
+
 
     }
 
