@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 // Controller
 use App\Http\Controllers\Api\SportController;
+use App\Http\Controllers\Api\ImageController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,4 +24,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 // Sport
 Route::apiResource('sports', SportController::class);
+
+// Image URL
+Route::get('image/{filename}', [ImageController::class,'getImage'])->name('image.getImage'); 
 
