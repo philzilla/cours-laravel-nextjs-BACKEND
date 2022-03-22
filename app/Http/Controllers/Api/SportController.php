@@ -104,12 +104,13 @@ class SportController extends Controller
 
         // On récupère le nom du fichier avec son extension, résultat $filenameWithExt : "soccer.jpg"
        $filenameWithExt = $request->file('image')->getClientOriginalName();
-           
+       $filenameWithoutExt = pathinfo($filenameWithExt, PATHINFO_FILENAME);     
+
         //  On récupère l'extension du fichier, résultat $extension : ".jpg"
         $extension = $request->file('image')->getClientOriginalExtension();
      
         // On créer un nouveau fichier avec le nom + une date + l'extension, résultat $fileNameToStore : "soccer_20220422.jpg"
-        $filename = $filenameWithExt.'_'.time().'.'.$extension;
+        $filename = $filenameWithoutExt.'_'.time().'.'.$extension;
       
         // On enregistre le fichier à la racine /storage/app/public/uploads, ici la méthode storeAs défini déjà le chemin /storage/app
         $path = $request->file('image')->storeAs('public/uploads',$filename);
